@@ -5,8 +5,6 @@ console.log("PRIVATE_KEY:", process.env.IMAGE_KIT_PRIVATE_KEY);
 console.log("ENDPOINT:", process.env.IMAGE_KIT_ENDPOINT);
 import express from "express";
 import cors from "cors";
-// import path from "path";
-// import url, { fileURLToPath } from "url";
 import ImageKit from "imagekit";
 import mongoose from "mongoose";
 import Chat from "./models/chat.js";
@@ -16,8 +14,6 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 const port = process.env.PORT || 3000;
 const app = express();
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
@@ -99,18 +95,7 @@ app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
   }
 });
 
-// app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
-//   const userId = req.auth.userId;
 
-//   try {
-//     const userChats = await UserChats.find({ userId });
-
-//     res.status(200).send(userChats[0].chats);
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).send("Error fetching userchats!");
-//   }
-// });
 app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
 
@@ -118,7 +103,7 @@ app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
     const userChats = await UserChats.findOne({ userId });
 
     if (!userChats) {
-      return res.status(200).send([]); // No chats yet for this user
+      return res.status(200).send([]); 
     }
 
     res.status(200).send(userChats.chats);
@@ -173,15 +158,8 @@ app.put("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(401).send("Unauthenticated!");
+  res.status(err.status || 500).send(err.message || "Something went wrong!");
 });
-
-// PRODUCTION
-// app.use(express.static(path.join(__dirname, "../client/dist")));
-
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
-// });
 
 app.listen(port, () => {
   connect();

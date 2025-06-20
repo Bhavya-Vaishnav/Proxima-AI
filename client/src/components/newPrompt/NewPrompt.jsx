@@ -16,16 +16,15 @@ const NewPrompt = ({ data }) => {
     aiData: {},
   });
 
-const chat = model.startChat({
-  history: data?.history.map(({ role, parts }) => ({
-    role,
-    parts: [{ text: parts[0].text }],
-  })),
-  generationConfig: {
-    // maxOutputTokens: 100,
-  },
-});
-
+  const chat = model.startChat({
+    history: data?.history.map(({ role, parts }) => ({
+      role,
+      parts: [{ text: parts[0].text }],
+    })),
+    generationConfig: {
+      // maxOutputTokens: 100,
+    },
+  });
 
   const endRef = useRef(null);
   const formRef = useRef(null);
@@ -37,19 +36,26 @@ const chat = model.startChat({
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
+      const { getToken } = await import("@clerk/clerk-react");
+      const token = await getToken();
+
       return fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           question: question.length ? question : undefined,
           answer,
           img: img.dbData?.filePath || undefined,
         }),
-      }).then((res) => res.json());
+      }).then((res) => {
+        if (!res.ok) throw new Error("Request failed");
+        return res.json();
+      });
     },
     onSuccess: () => {
       queryClient
