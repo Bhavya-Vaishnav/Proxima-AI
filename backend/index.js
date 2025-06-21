@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
-dotenv.config();console.log("✅ ENV DEBUG");
+dotenv.config();
+console.log("✅ ENV DEBUG");
 console.log("PUBLIC_KEY:", process.env.IMAGE_KIT_PUBLIC_KEY);
 console.log("PRIVATE_KEY:", process.env.IMAGE_KIT_PRIVATE_KEY);
 console.log("ENDPOINT:", process.env.IMAGE_KIT_ENDPOINT);
@@ -14,10 +15,12 @@ import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 const port = process.env.PORT || 3000;
 const app = express();
 
-
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: [
+      process.env.CLIENT_URL, // for production
+      "http://localhost:5173", // for development
+    ],
     credentials: true,
   })
 );
@@ -95,7 +98,6 @@ app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
   }
 });
 
-
 app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
 
@@ -103,7 +105,7 @@ app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
     const userChats = await UserChats.findOne({ userId });
 
     if (!userChats) {
-      return res.status(200).send([]); 
+      return res.status(200).send([]);
     }
 
     res.status(200).send(userChats.chats);

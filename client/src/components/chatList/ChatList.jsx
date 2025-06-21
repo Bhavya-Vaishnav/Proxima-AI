@@ -1,14 +1,26 @@
 import { Link } from "react-router-dom";
 import "./chatList.css";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@clerk/clerk-react";
 
 const ChatList = () => {
+  const { getToken } = useAuth();
+
   const { isPending, error, data } = useQuery({
     queryKey: ["userChats"],
-    queryFn: () =>
-      fetch(`${import.meta.env.VITE_API_URL}/api/userchats`, {
+    queryFn: async () => {
+      const token = await getToken();
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/userchats`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: "include",
-      }).then((res) => res.json()),
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch user chats");
+      return res.json();
+    },
   });
 
   return (
