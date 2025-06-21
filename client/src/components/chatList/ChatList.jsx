@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
 import "./chatList.css";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/clerk-react";
+import { MdDeleteOutline } from "react-icons/md";
 
 const ChatList = () => {
   const { getToken } = useAuth();
+  const queryClient = useQueryClient();
 
   const { isPending, error, data } = useQuery({
     queryKey: ["userChats"],
     queryFn: async () => {
       const token = await getToken();
-
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/userchats`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -20,6 +21,24 @@ const ChatList = () => {
 
       if (!res.ok) throw new Error("Failed to fetch user chats");
       return res.json();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (chatId) => {
+      const token = await getToken();
+      return fetch(`${import.meta.env.VITE_API_URL}/api/chats/${chatId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      }).then((res) => {
+        if (!res.ok) throw new Error("Failed to delete chat");
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userChats"] });
     },
   });
 
@@ -37,9 +56,15 @@ const ChatList = () => {
           : error
           ? "Something went wrong!"
           : data?.map((chat) => (
-              <Link to={`/dashboard/chats/${chat._id}`} key={chat._id}>
-                {chat.title}
-              </Link>
+              <div className="chatItem" key={chat._id}>
+                <Link to={`/dashboard/chats/${chat._id}`}>{chat.title}</Link>
+                <button
+                  className="deleteBtn"
+                  onClick={() => deleteMutation.mutate(chat._id)}
+                >
+                  <MdDeleteOutline />
+                </button>
+              </div>
             ))}
       </div>
       <hr />
