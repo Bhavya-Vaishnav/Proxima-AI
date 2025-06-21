@@ -54,26 +54,26 @@ Create a `.env` file in **both** `client/` and `backend/` directories with the f
 
 ### 🔑 Backend `.env` (`/backend/.env`)
 
-IMAGE_KIT_ENDPOINT=your_imagekit_endpoint_url
-IMAGE_KIT_PUBLIC_KEY=your_imagekit_public_key
-IMAGE_KIT_PRIVATE_KEY=your_imagekit_private_key
+IMAGE_KIT_ENDPOINT=your_imagekit_endpoint_url  
+IMAGE_KIT_PUBLIC_KEY=your_imagekit_public_key  
+IMAGE_KIT_PRIVATE_KEY=your_imagekit_private_key  
 
-CLIENT_URL=your_client_url
-MONGO=your_mongo_connection_string
+CLIENT_URL=your_client_url  
+MONGO=your_mongo_connection_string  
 
-CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_private_key
+CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key  
+CLERK_SECRET_KEY=your_clerk_private_key  
 
 ---
 
 ### 🌐 Frontend `.env` (`/client/.env`)
 
-VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-VITE_IMAGE_KIT_ENDPOINT=your_imagekit_endpoint_url
-VITE_IMAGE_KIT_PUBLIC_KEY=your_imagekit_public_key
-VITE_GEMINI_PUBLIC_KEY=your_gemini_public_key
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key  
+VITE_IMAGE_KIT_ENDPOINT=your_imagekit_endpoint_url  
+VITE_IMAGE_KIT_PUBLIC_KEY=your_imagekit_public_key  
+VITE_GEMINI_PUBLIC_KEY=your_gemini_public_key  
 
-VITE_API_URL=your_api_url
+VITE_API_URL=your_api_url  
 
 ---
 
